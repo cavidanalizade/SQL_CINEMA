@@ -1,0 +1,75 @@
+create database Cinema 
+use Cinema
+
+create table Movies 
+(
+[Id] int primary key identity ,
+[Name] nvarchar(70) not null  , 
+[Rate] float check (Rate>=0 and Rate<=10),
+[DirectorId] int references Directors(Id),
+[GenresId] int REFERENCES Genres(Id)
+
+)
+
+create table Directors 
+(
+Id int primary key identity,
+[Name] nvarchar(70) not null  , 
+[Surname] nvarchar(70) not null  , 
+[Age] int check (age>=18)
+)
+
+create table Genres 
+(
+Id int primary key identity,
+[Name] nvarchar(70) not null  
+)
+create table Actors 
+(
+Id int primary key identity,
+[Name] nvarchar(70) not null  , 
+[Surname] nvarchar(70) not null  , 
+[Age] int check (age>=18),
+[MoviesId] int references Movies(Id) 
+)
+
+select m.Name from Movies as m
+where m.Rate>8
+
+select m.Name , m.Rate from Movies as m
+
+select Name, Surname, Age
+FROM Actors
+WHERE Age > 40
+UNION
+SELECT Name, Surname, Age
+FROM Directors
+WHERE Age > 40;
+
+
+SELECT Movies.Name [MovieName], Movies.Rate, CONCAT(Directors.Name, ' ', Directors.Surname) AS DirectorFullName
+FROM Movies
+ JOIN Directors ON Movies.DirectorId = Directors.Id;
+
+ SELECT Directors.Name, Directors.Surname, COUNT(Movies.Id) AS DirectedMovieCount
+FROM Directors
+LEFT JOIN Movies ON Movies.DirectorId = Directors.Id
+GROUP BY Directors.Id, Directors.Name, Directors.Surname;
+
+--CREATE VIEW MovieDetails AS
+--SELECT M.Name AS MovieName, M.Rate, CONCAT(D.Name, ' ', D.Surname) AS DirectorFullName, CONCAT(A.Name, ' ', A.Surname) AS ActorFullName
+--FROM Movies M, Directors D, Actors A
+--WHERE M.DirectorId = D.Id AND M.Id = A.MoviesId;
+--SELECT * FROM MovieDetails;
+
+
+
+SELECT CONCAT(A.Name, ' ', A.Surname) AS ActorFullName, 
+       M.Name AS MovieName, 
+       G.Name AS Genre, 
+       CONCAT(D.Name, ' ', D.Surname) AS DirectorFullName, 
+       M.Rate
+FROM Actors as A
+JOIN Movies M ON A.MoviesId = M.Id
+JOIN Genres G ON M.GenresId = G.Id
+JOIN Directors D ON M.DirectorId = D.Id;
